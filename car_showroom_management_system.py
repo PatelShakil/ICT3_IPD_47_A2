@@ -4,14 +4,13 @@ Created on Sun Sep 14 10:39:32 2025
 
 @author: Acer
 """
-
 # Custom Exception for Salary Restriction
 class SalaryTooLowException(Exception):
     def __init__(self, message="Salary is less than ₹1,00,000. Access denied!"):
         super().__init__(message)
 
 
-# Car Class (Encapsulation)
+# Base Car Class (Encapsulation)
 class Car:
     def __init__(self, brand, model, price, fuel_type, transmission, color):
         self.__brand = brand
@@ -35,7 +34,19 @@ class Car:
         return self.__model
 
 
-# Showroom Class (Inheritance Demonstration)
+# Derived Class (Inheritance Example)
+class LuxuryCar(Car):
+    def __init__(self, brand, model, price, fuel_type, transmission, color, extra_features):
+        super().__init__(brand, model, price, fuel_type, transmission, color)  # inheritance in action
+        self.__extra_features = extra_features
+
+    def get_details(self):
+        details = super().get_details()  # reuse parent method
+        details["Luxury Features"] = self.__extra_features
+        return details
+
+
+# Showroom Class
 class Showroom:
     def __init__(self):
         self.inventory = []
@@ -83,9 +94,10 @@ def main():
     showroom = Showroom()
 
     # Adding some default cars
-    showroom.buy_car(Car("Toyota", "Fortuner", 3500000, "Diesel", "Automatic", "Black"))
     showroom.buy_car(Car("Honda", "City", 1200000, "Petrol", "Manual", "White"))
     showroom.buy_car(Car("Tata", "Nexon", 900000, "Petrol", "Automatic", "Blue"))
+    showroom.buy_car(LuxuryCar("Mercedes", "S-Class", 9500000, "Petrol", "Automatic", "Black",
+                               ["Massage Seats", "360 Camera", "Ambient Lighting"]))
 
     while True:
         print("\n--- Car Showroom Management ---")
@@ -110,13 +122,19 @@ def main():
             showroom.sell_car(model)
 
         elif choice == "4":
+            car_type = input("Enter type (normal/luxury): ").strip().lower()
             brand = input("Enter brand: ")
             model = input("Enter model: ")
             price = int(input("Enter price: "))
             fuel = input("Enter fuel type: ")
             transmission = input("Enter transmission: ")
             color = input("Enter color: ")
-            showroom.buy_car(Car(brand, model, price, fuel, transmission, color))
+
+            if car_type == "luxury":
+                features = input("Enter luxury features (comma separated): ").split(",")
+                showroom.buy_car(LuxuryCar(brand, model, price, fuel, transmission, color, features))
+            else:
+                showroom.buy_car(Car(brand, model, price, fuel, transmission, color))
 
         elif choice == "5":
             print("Exiting... Thank you for using Car Showroom System.")
